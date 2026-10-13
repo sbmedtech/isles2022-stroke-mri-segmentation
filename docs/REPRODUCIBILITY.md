@@ -1,5 +1,35 @@
 # Reproducibility assessment and execution guide
 
+## Current portfolio and released-checkpoint usability
+
+Use the [portfolio notebook](../notebooks/ISLES_2022_Portfolio.ipynb) as the primary
+reading/experiment entry point; its [guide](../notebooks/PORTFOLIO_GUIDE.md) explains
+execution and historical evidence. The original research notebook remains in the
+current tree pending the owner's explicit backup confirmation; no history rewrite
+or external-record deletion is authorized. A later executable refactor must be
+reviewed independently before its changed cells or outputs are accepted.
+
+The [preview release](https://github.com/sbmedtech/isles2022-stroke-mri-segmentation/releases/tag/model-v0.1.0-preview)
+contains `checkpoint_best_validation.pt` (14,321,909 bytes), SHA-256
+`dd6ae8182a9af708662ad43e460459ef3deb3f89e70cc585ee9750d91755b70d`.
+The [README loading example](../README.md#pretrained-model) was executed against
+those actual bytes using the installed package wheel outside the checkout:
+`build_model()` and strict loading of `checkpoint["model_state_dict"]` succeed;
+metadata reports epoch 43, all 49 state entries are finite, and eval mode is set.
+This is CPU artifact/API compatibility, not an MRI inference or metric reproduction.
+
+The file also stores optimizer state and training history but lacks the selection
+run/context and validation-threshold provenance required by repaired resume and
+final-evaluation paths. Do not fabricate those fields, use test scores to choose a
+threshold, or adopt this legacy file into a provenance-bound workflow by renaming it.
+The weight license is separate from MIT code licensing. Original threshold/training
+lineage, full 38-case comparison evidence, fresh Colab/GPU/MRI execution and clinical
+validity remain unverified; the owner's reproduction report is a separate category.
+
+The assessment below records earlier component checks and historical execution
+caveats. Its statements about unperformed checkpoint checks refer to that earlier
+work, not to the compatibility check documented above.
+
 ## Independent assessment
 
 Agent 4's complete audit was accessible in the shared chat **Agent 4: Manager**.
@@ -95,7 +125,9 @@ set is still unavailable. `google.colab` is supplied by Colab, not pip-installed
 as a local notebook dependency. Rerunning the notebook's unpinned install cells
 can change the environment, so re-record it afterward.
 
-The experiment remains manual in `ISLES_2022_First_Colab_Notebook.ipynb`:
+The following step labels describe the preserved original research record, not a
+newly executed experiment. Use the portfolio notebook and guide for the current
+presentation; this historical execution map retains the migration caveats:
 
 - Mount Drive and set the project/dataset paths before preprocessing; `/content`
   is temporary and `/content/drive/MyDrive/ISLES2022_Project` is user-specific.
