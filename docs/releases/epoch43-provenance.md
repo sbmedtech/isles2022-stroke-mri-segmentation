@@ -136,3 +136,70 @@ The full available synthetic suite is run for this investigation and recorded
 with its command/count in the PR. No historical checkpoint, comparison CSV,
 dataset, real MRI inference, validation sweep, training, GPU/Colab execution,
 deterministic resume or licensing approval was verified in this investigation.
+
+## Release-checkpoint inspection update (2026-10-13)
+
+The owner uploaded [model-v0.1.0-preview](https://github.com/sbmedtech/isles2022-stroke-mri-segmentation/releases/tag/model-v0.1.0-preview).
+Release ID: 412063756; asset ID: 638119015; filename:
+`checkpoint_best_validation.pt`; observed size: **14,321,909 bytes**.
+Actual downloaded-file SHA-256:
+`dd6ae8182a9af708662ad43e460459ef3deb3f89e70cc585ee9750d91755b70d`,
+equal to the GitHub asset digest. Release/tag names and target `main` do not
+establish original training code identity. Assets can be replaced; pin the digest,
+asset ID, and size rather than relying on a tag URL alone.
+
+The artifact was downloaded into a permission-restricted /tmp directory outside
+Git with a deny-all .gitignore; the default sandbox proxy failed, but an explicitly
+network-enabled download succeeded. Inspection used CPU
+`torch.load(..., weights_only=True)`. No weights or private artifacts are included
+in this PR.
+
+### Newly verified, scoped facts
+
+- Serialized metadata declares epoch **43**.
+- Top-level keys are `epoch`, `model_state_dict`, `optimizer_state_dict`,
+  and `training_history`.
+- State dictionary has 49 entries totaling **1,187,546** elements; tensors are
+  finite. Strict loading into the documented model succeeds without missing or
+  unexpected keys. A synthetic input of shape (1,3,64,64,32) produces a finite
+  output of shape (1,1,64,64,32). This is actual checkpoint compatibility,
+  not real MRI performance verification.
+- Training history has 43 contiguous epochs, 1 through 43. All 43 losses match
+  the repository's saved historical training output when rounded to its displayed
+  four decimal places. Full-precision historical equality cannot be established
+  from rounded notebook output.
+- Optimizer has 49 state entries; all recorded step values equal **14,526**.
+  The arithmetic `3*175 + 40*350 + 1 = 14526` matches the documented batch
+  schedule and single diagnostic optimizer update. Recorded settings include
+  lr=1e-4, weight_decay=1e-5, betas=(0.9,0.999), eps=1e-8 and
+  decoupled_weight_decay=True. This is internal consistency, not independent
+  proof of every training update, dataset membership, or parent lineage.
+
+### Still unverified
+
+The checkpoint has no `selection` or `validation_threshold` field and no
+recorded split, reconstructable configuration, source revision, environment or
+RNG state at the top level. Its metadata cannot certify threshold 0.25, validation
+selection, ordered patient partition, historical training provenance, or exact
+resume. Do not add guessed modern selection metadata or weaken legacy rejection
+to make this file appear certified.
+
+There are no reproduction/original CSVs, ordered splits, epoch-23 weights or
+validation sweep records in the release. The original private evidence ZIP remains
+inaccessible because it exceeds the 32 MiB transfer limit. Thus the owner's exact
+38-case reproduction remains acknowledged but not independently artifact-verified.
+No MRI inference or test/validation tuning was performed.
+
+Next minimal delivery: an **evidence-only ZIP under 32 MiB** containing the
+original/reproduction 38-row CSVs and comparison log/script, ordered split JSON,
+validation threshold detail/summary and validation/training histories, executed
+Colab notebooks/logs, environments and checksum manifest. Supply the actual
+epoch-23 threshold-selection checkpoint separately (or numbered binary parts if
+needed), and confirm whether the released epoch-43 bytes are exactly the bytes
+used for the reproduction and preserved historical run. The broader request above
+remains applicable, with the released epoch-43 asset now successfully inspected.
+
+Release checkpoint identity and model compatibility are verified for these bytes;
+threshold provenance, actual split/metric verification, full training lineage,
+licenses and independent acceptance remain blocked. Publication by the owner does
+not convert this research prerelease into an independently accepted model release.
