@@ -3,6 +3,10 @@
 Source: complete final audit in the shared Codex chat **Agent 4: Manager**
 (`01a13641-51d5-7296-a131-b4baf20d70f3`). Audited and verified repository base:
 `a29b1662f8e6affebb1b30a213a5734bd9f2487b` (merged PRs #1–#4).
+Concurrent PRs #5 and #6 were subsequently integrated at `9fd587d` without
+changing their seeding utilities, notebook dependency extra, or CPU reference pins.
+PR #6 independently addressed the namespace, NumPy minimum, and NiBabel extra;
+this PR preserves those changes and adds usage-package data and build-test tools.
 
 The original 19 tests passed independently before fixes. The findings below were
 checked against current source, rather than inferred from the audit's verdict.
@@ -23,8 +27,8 @@ The architecture, preprocessing, splits, patch sampling, initial training, loss,
 optimizer, validation schedule, and Dice calculation are preserved. Notebook
 outputs/metadata are preserved as historical evidence, not regenerated results.
 
-Validation: 28 tests pass, including 19 existing tests, eight selection tests,
-and a built-wheel packaging test. Tests cover stale scores/weights, measured
+Validation: 32 tests pass after integrating concurrent PRs #5 and #6, including 24 existing tests, eight selection tests,
+with the existing built-wheel packaging test extended. Tests cover stale scores/weights, measured
 baseline selection, non-default thresholds, strict ties, best-weight updates,
 resume, missing/foreign best checkpoints, changed provenance, and nonfinite
 baseline metrics. All notebook code parses after excluding IPython magics;

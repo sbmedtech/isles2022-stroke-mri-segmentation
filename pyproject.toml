@@ -11,6 +11,7 @@ dependencies = ["numpy>=1.22", "torch", "monai"]
 
 [project.optional-dependencies]
 test = ["nibabel", "setuptools>=61", "wheel"]
+notebook = ["nibabel", "scipy", "matplotlib", "tqdm", "requests", "pandas"]
 
 [tool.setuptools.packages.find]
 include = ["isles2022*", "evaluation*"]
