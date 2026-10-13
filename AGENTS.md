@@ -1,3 +1,100 @@
+# Agent coordination for the ISLES 2022 medical AI portfolio
+
+## Current scope and source of truth
+
+The repository owner's portfolio instructions recorded in issue #15 on 2026-10-13
+supersede the former research-release priorities and dependency graph below.
+GitHub issues/PRs and this file are authoritative for assignments, ownership,
+evidence, blockers and approvals. Read their latest versions and verify remote
+main before every continuation; do not treat a cached branch or another chat as acceptance.
+
+Priority: a clinically grounded, honest research portfolio with real MRI examples,
+a concise README, a readable companion notebook, clear methods/results/limitations,
+and owner-approved MIT licensing for original code. Production CLIs, full scratch
+training and distribution are deferred, not silently completed. Portfolio drafting
+is not blocked by unresolved release-grade provenance; figure use still requires
+source/access/attribution checks, and missing scientific evidence remains unverified.
+
+## Active responsibilities and branches
+
+| Issue | Disposition | Accountable agent | Branch / ownership |
+| --- | --- | --- | --- |
+| #9 | Retain provenance bug-fix work; reviewed fix is in main | Agent 1: Software Engineer | `release/artifact-context-roundtrip`; preserve identity checks |
+| #10 | Simplify to real figures and results evidence | Agent 2: ML Research Scientist | `portfolio/figures-and-results`; `assets/portfolio/historical-test-examples.png`, `docs/portfolio/figures-and-results.md`; keep investigation PR #18 separate |
+| #11 | Simplify notebook/module readability | Agent 1: Software Engineer | `portfolio/notebook-and-modules`; `notebooks/ISLES_2022_Portfolio.ipynb`, its guide, module comments/docstrings |
+| #12 | Simplify independent portfolio QA | Agent 3: Documentation + QA Engineer | Record exact-head installed-component, documentation, figure and preservation checks; agree a separate branch in the issue before QA implementation |
+| #15 | Retain and prioritize portfolio presentation | Agent 3: Documentation + QA Engineer | `portfolio/readme-and-license`; README, LICENSE, `docs/LICENSING.md`, `docs/methodology-and-audit.md`, separate AGENTS.md coordination commit |
+| #13 / #14 / #16 | Defer inference CLI, training workflow and distribution | Original owners retained | No implementation dispatch or publication implied |
+
+Agent 4: Manager resolves ownership/interface conflicts, records scheduling,
+independently reviews integration and reports remaining gates. Do not close any
+issue or PR merely because scope was simplified or deferred. Shared GitHub account
+assignees are not separate agent identities: name the actual agent role in evidence.
+
+## Coordination, isolation and review
+
+1. Before edits, claim the issue in GitHub with agent role, exact baseline, branch,
+   isolated checkout/worktree, intended files, acceptance checks and blockers.
+   Never switch/reset/overwrite another agent's tree; never commit directly to main.
+2. Agent 2 owns genuine figure bytes and caption/evidence inventory; Agent 3 consumes
+   those assets for layout without duplicate generation. Agent 1 owns notebook/code;
+   Agent 3 owns README/supporting docs/license. Shared paths require an issue-recorded
+   ownership decision by Agent 4 before edits.
+3. Preserve the original notebook bytes, historical images/outputs and executable
+   scientific behavior. A companion notebook may clarify Markdown while preserving
+   code source/order and saved evidence; document that it is a reading companion,
+   not a new experiment. Never create synthetic or AI-generated MRI stand-ins.
+4. Open separate linked PRs identifying issue, base/head, dependency PRs, evidence,
+   commands/test counts/environment and unavailable checks. Drafts with unresolved
+   links/assets must disclose that status. Stacked PRs declare their parent and require
+   renewed review after retargeting, conflict resolution or any head change.
+5. Agent 1 reviews setup/code accuracy; Agent 2 reviews science/results/captions;
+   Agent 3 independently checks Agent 1/2 work; Agent 4 independently reviews final
+   integration. Nobody approves their own work. Agent 3's PR requires Agents 1/2
+   review and Agent 4 final review, all tied to exact head SHA with PASS/FAIL and limits.
+6. **No merge, issue/PR closure, or external publication without the repository
+   owner's explicit approval.** No self/automatic merges. Existing approvals apply
+   only to reviewed heads; new commits or integrated dependencies require rechecks.
+
+## Scientific and licensing safeguards
+
+- Preserve architecture/defaults/state-dict compatibility, DWI/ADC/FLAIR order,
+  normalization/geometry checks, affine-based FLAIR resampling, sampling, loss,
+  optimizer, 175/37/38 partition and validation cadence. Scientific changes require
+  separate scope and evidence; readability/documentation is not permission to refactor them.
+- Keep training patients separate before patches; use validation only for selection.
+  Do not tune on the internal test cohort. Disclose already inspected test examples.
+  Affine resampling is not anatomical registration; external/prospective performance
+  and clinical readiness are not established.
+- Historical positive-case mean Dice 0.5377 and median 0.5818 describe 37 positive
+  patients among 38 total. Keep saved historical scores unchanged. Owner-reported
+  exact replication, reviewed checkpoint compatibility, synthetic fixes and unresolved
+  threshold/training lineage are distinct categories. Missing evidence is not PASS;
+  neither filenames nor a later checkpoint upload prove historical lineage.
+- Publish only genuine existing or properly evidenced MRI figures, with source/cell,
+  illustrative selection, full-volume metrics, normalization, transformations and
+  dataset credit/license. Never fabricate plots, results, verification badges or credentials.
+- The owner selected MIT for original code; accurate attribution is Shreyas Bharadwaj
+  / sbmedtech as supported by contribution history. Dataset/derived-image CC BY 4.0
+  and third-party notices remain separate. MIT code licensing does not license weights.
+- No raw dataset, scans, weights, credentials or local caches in Git. No additional
+  pretrained publication without separate provenance/licensing/owner approval.
+- Preserve supporting audit detail rather than delete scientific caveats. Run the
+  available synthetic suite and meaningful documentation/usability/preservation
+  checks; record real-MRI/GPU checks not performed. Clean setup or numerical
+  reproduction may be claimed only when actually executed and evidenced.
+
+## Historical research-release plan (superseded priorities)
+
+The following contract is retained for coordination history. Its prior release
+registry, dependencies and first assignments do not block the owner-authorized
+portfolio scope above. Its compatible scientific safeguards and evidence principles
+remain applicable. If scope conflicts remain, record them under #15 for Agent 4;
+the latest explicit repository-owner instruction takes precedence.
+
+<details>
+<summary>Original research-release coordination contract</summary>
+
 # Agent coordination for the ISLES 2022 research release
 
 ## Scope and shared source of truth
@@ -99,3 +196,5 @@ Close an issue only after an approved merge and linked acceptance evidence. A mi
 - Agent 2: claim R2 (#10) on `release/epoch43-provenance`. Inventory/review checkpoint, ordered split, 38-case reproduction records, environment and threshold-selection evidence; publish findings and proposed manifest contract in GitHub. Do not alter selection/training logic, tune on test patients, upload weights or claim missing evidence verified.
 - Agent 3: independently review this coordination-only PR and prepare an R4 QA matrix; no implementation edits during setup.
 - Agent 4: verify this setup contains only coordination changes, track dependencies and review implementation PRs after setup acceptance.
+
+</details>
