@@ -119,6 +119,10 @@ Drive paths and stateful cells require care: rerunning initial training can over
 checkpoints, a diagnostic cell updates weights, and legacy selection artifacts need
 migration. [Detailed execution and reproduction guide](docs/REPRODUCIBILITY.md).
 
+<a name="checkpoint-selection-repair-and-legacy-runs"></a>
+[Legacy checkpoint migration](docs/methodology-and-audit.md#checkpoint-selection-repair-and-legacy-runs)
+is documented separately; do not infer valid selection provenance from old filenames.
+
 ## Local setup and repository
 
 For reusable components and synthetic checks (Python **>=3.10**, reference CPU
