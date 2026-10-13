@@ -21,9 +21,13 @@ class PackagingTests(unittest.TestCase):
             with zipfile.ZipFile(wheel) as archive:
                 names = archive.namelist()
                 self.assertIn("evaluation/metrics.py", names)
+                self.assertIn("evaluation/USAGE.md", names)
+                self.assertIn("isles2022/model.py", names)
                 self.assertIn("isles2022/reproducibility.py", names)
                 metadata = archive.read(next(n for n in names if n.endswith(".dist-info/METADATA"))).decode()
                 self.assertIn('Requires-Dist: nibabel; extra == "test"', metadata)
+                self.assertIn('Requires-Dist: numpy>=1.22', metadata)
+                self.assertIn('Provides-Extra: notebook', metadata)
                 archive.extractall(target)
             subprocess.run([
                 sys.executable, "-I", "-c",

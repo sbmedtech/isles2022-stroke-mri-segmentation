@@ -22,8 +22,10 @@ Confirmed gaps, in priority order:
    notebook execution. No training or evaluation CLI exists. Commands below
    distinguish component checks from the manual notebook experiment.
 
-Agent 1 owns checkpoint-selection and threshold fixes. Those files and logic are
-unchanged here. README presentation belongs to Agent 3; this guide is separate.
+Agent 1's checkpoint-selection repair is now present in this branch; see the
+README migration instructions and [audit follow-up](audit-follow-up.md). The
+repair adds selection provenance and measured baseline checks, but does not
+restore RNG state or certify cache-creation provenance.
 Optional seed helpers are not automatically wired into the original notebook.
 
 ## CPU component setup
@@ -104,8 +106,9 @@ The experiment remains manual in `ISLES_2022_First_Colab_Notebook.ipynb`:
   and Step 16 (through epoch 43). Step 7B also updates weights as a diagnostic;
   it is not a neutral check. Capture the exact cell execution order.
 - Validation/threshold assessment occurs in Steps 12–14. Step 17 evaluates the
-  internal test set. Review Agent 1's checkpoint/threshold repair before using
-  those sections for a new scientific rerun. No repair is implied by this PR.
+  internal test set. Follow the README's checkpoint-selection migration instructions before using
+  those sections for a new scientific rerun; legacy post-epoch-23 selection
+  resumes are rejected without provenance.
 
 There is no truthful `python train.py` or `python evaluate.py` command to document
 at this revision. Local execution requires adapting Colab imports and paths.
