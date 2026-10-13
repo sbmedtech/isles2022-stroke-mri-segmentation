@@ -107,10 +107,12 @@ separates historical outputs, owner reports and reviewed compatibility.
 
 ## Explore in Google Colab
 
-[**Open the portfolio notebook in Colab**](https://colab.research.google.com/github/sbmedtech/isles2022-stroke-mri-segmentation/blob/main/notebooks/ISLES_2022_Portfolio.ipynb)
-· [View notebook](notebooks/ISLES_2022_Portfolio.ipynb)
+[**Open the portfolio notebook in Colab**](https://colab.research.google.com/github/sbmedtech/isles2022-stroke-mri-segmentation/blob/90416f039ab534fb919e6cd9d2b53b6325171cc5/notebooks/ISLES_2022_Portfolio.ipynb)
+· [View notebook](https://github.com/sbmedtech/isles2022-stroke-mri-segmentation/blob/90416f039ab534fb919e6cd9d2b53b6325171cc5/notebooks/ISLES_2022_Portfolio.ipynb)
 · [Original experiment record](ISLES_2022_First_Colab_Notebook.ipynb)
 
+The link pins the independently reviewed [PR #22](https://github.com/sbmedtech/isles2022-stroke-mri-segmentation/pull/22)
+revision, so it is usable before owner-approved integration into `main`.
 The companion presents the experiment with a clearer narrative; it preserves
 executable cell source/order and saved historical outputs. Save a working copy,
 choose a GPU runtime if available, mount Drive, and review the cells before running.
@@ -147,7 +149,6 @@ Current notebook preprocessing requires expert masks. Get the dataset from offic
 Zenodo; do not commit scans, weights or local caches.
 
 ```text
-notebooks/          Portfolio notebook and reading guide
 ISLES_2022_First_Colab_Notebook.ipynb  Original experiment record
 isles2022/          Model, Dice and reproducibility helpers
 evaluation/         Volume, zero-overlap and patient-bootstrap utilities
@@ -157,6 +158,9 @@ docs/               Methods, evidence, licensing and audit detail
 requirements/       Observed CPU direct pins, not a transitive lock
 LICENSE             MIT license for original project code
 ```
+
+The linked reading companion and its guide are supplied by [PR #22](https://github.com/sbmedtech/isles2022-stroke-mri-segmentation/pull/22);
+they are not added or duplicated by this documentation PR.
 
 ## Licensing
 
