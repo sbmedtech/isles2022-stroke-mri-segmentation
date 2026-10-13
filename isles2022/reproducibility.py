@@ -1,6 +1,7 @@
-"""Opt-in random seeding and a non-secret environment inventory.
+"""Optional seed initialization and an allowlisted execution-environment report.
 
-These helpers do not alter notebook training, checkpoints, or thresholds.
+Call these helpers explicitly from experiment code. They are not automatically
+wired into the notebook and do not change its training, checkpoints or thresholds.
 """
 
 import importlib.metadata
@@ -13,12 +14,17 @@ import torch
 
 
 def seed_everything(seed=42, *, deterministic=False):
-    """Seed Python, NumPy, and PyTorch; return a seeded DataLoader generator.
+    """Initialize common RNGs and return a seeded PyTorch loader generator.
 
-    Call before creating the model or sampling data. Strict mode rejects
-    nondeterministic PyTorch operations. CUDA strict mode requires launching
-    with CUBLAS_WORKSPACE_CONFIG=:4096:8 (or :16:8) before CUDA initialization.
-    This is not RNG-state restoration and does not guarantee resumed-run parity.
+    Call before model initialization or data sampling. Pass the returned
+    generator to ``DataLoader(generator=...)``; independent NumPy ``default_rng``
+    objects still need their own seeds. ``deterministic`` sets PyTorch's strict
+    deterministic flag and the cuDNN flags used below.
+
+    CUDA strict mode requires CUBLAS_WORKSPACE_CONFIG=:4096:8 (or :16:8) before
+    process/CUDA initialization and may reject unsupported operations. Initial
+    seeding is not checkpoint RNG-state restoration and does not guarantee
+    identical interrupted runs, software versions or hardware results.
     """
     if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed < 2**32:
         raise ValueError("seed must be an integer in [0, 2**32)")
@@ -39,14 +45,24 @@ def seed_everything(seed=42, *, deterministic=False):
 
 
 def seed_worker(worker_id):
-    """DataLoader worker_init_fn: derive Python/NumPy seeds from PyTorch."""
+    """Seed a DataLoader worker's Python/NumPy RNGs from its PyTorch seed.
+
+    Pass this function as ``worker_init_fn``. PyTorch assigns the worker seed;
+    ``worker_id`` is accepted for the DataLoader callback interface.
+    """
     worker_seed = torch.initial_seed() % 2**32
     random.seed(worker_seed)
     np.random.seed(worker_seed)
 
 
 def environment_report():
-    """Return JSON-serializable versions and execution settings, never env dumps."""
+    """Return an allowlisted, JSON-serializable environment inventory.
+
+    Includes package/Python versions, CUDA availability and determinism settings.
+    An absent package is recorded as None. Only the two named execution variables
+    below are read; credentials and the full process environment are not dumped.
+    An inventory describes execution context, not experimental reproducibility.
+    """
     packages = {}
     for name in ("numpy", "torch", "monai", "nibabel", "scipy", "matplotlib",
                  "tqdm", "requests", "pandas", "setuptools"):
