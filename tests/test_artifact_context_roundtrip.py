@@ -150,6 +150,18 @@ class AdamWContextRoundTripTests(unittest.TestCase):
         # Preserve the pre-fix context/checkpoint digest encoding for compatibility.
         expected = hashlib.sha256(json.dumps(self.context, sort_keys=True).encode()).hexdigest()
         self.assertEqual(self.env['context_digest'](self.context), expected)
+        old_path_digest = hashlib.sha256(json.dumps(raw, sort_keys=True).encode()).hexdigest()
+        self.assertEqual(csv.parent.name, f'epoch43-{old_path_digest}')
+
+    def test_canonical_metadata_rejects_unsupported_or_nonfinite_values(self):
+        canonical = self.env['canonical_json_value']
+        source = {'optimizer': copy.deepcopy(self.context['optimizer'])}
+        normalized = canonical(source)
+        self.assertIsInstance(normalized['optimizer'][0]['betas'], list)
+        self.assertIsInstance(source['optimizer'][0]['betas'], tuple)
+        for value in [float('nan'), float('inf'), float('-inf'), object()]:
+            with self.subTest(value=type(value)), self.assertRaises((ValueError, TypeError)):
+                canonical({'unsupported_metadata': value})
 
 
 if __name__ == '__main__':

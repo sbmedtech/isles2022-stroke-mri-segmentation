@@ -18,7 +18,7 @@ NOTEBOOK = Path(__file__).resolve().parents[1] / 'ISLES_2022_First_Colab_Noteboo
 SOURCE = ''.join(json.loads(NOTEBOOK.read_text())['cells'][45]['source'])
 TREE = ast.parse(SOURCE)
 HELPERS = ast.Module(body=[node for node in TREE.body if isinstance(node, ast.FunctionDef)
-                          and node.name in {'state_digest', 'context_digest', 'validate_selection',
+                          and node.name in {'state_digest', 'canonical_json_value', 'context_digest', 'validate_selection',
                                             'establish_selection', 'save_atomic'}], type_ignores=[])
 NS = dict(torch=torch, hashlib=hashlib, json=json, math=math, uuid=uuid)
 exec(compile(HELPERS, str(NOTEBOOK), 'exec'), NS)
