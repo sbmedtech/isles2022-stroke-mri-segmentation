@@ -1,7 +1,9 @@
-"""Physical volume, complete overlap failures, and patient bootstrap intervals.
+"""Scientific utilities for physical lesion size and patient-level error analysis.
 
-Requires NumPy. NIfTI helpers accept a nibabel image without importing nibabel.
-Masks must already be binary; probabilities are never implicitly thresholded.
+These standalone functions complement Dice: native-grid volume in mL, complete
+zero-overlap detection, and patient bootstrap intervals. Masks must already be
+binary; probabilities are never implicitly thresholded. NumPy is required.
+The NIfTI helper accepts an already loaded NiBabel image without importing it.
 """
 
 from dataclasses import dataclass
@@ -11,6 +13,7 @@ import numpy as np
 
 
 def _binary_mask(mask):
+    """Validate a nonempty 3D 0/1 mask and return its boolean representation."""
     array = np.asarray(mask)
     if array.ndim != 3 or any(size == 0 for size in array.shape):
         raise ValueError("mask must be a nonempty 3D array")
@@ -20,12 +23,15 @@ def _binary_mask(mask):
 
 
 def infarct_volume_ml(mask, affine, *, spatial_unit):
-    """Return binary lesion volume in mL from its own voxel-to-world affine.
+    """Measure a binary lesion in mL using the mask's voxel-to-world affine.
 
-    Explicit units are required: 'mm', 'meter', or 'micron' (NIfTI names).
-    abs(det(affine[:3, :3])) accounts for anisotropy, rotation, reflection,
-    and shear. Use the native expert mask for native infarct volume; a
-    resampled mask can have a different discretized volume.
+    ``mask`` is a nonempty 3D 0/1 array. ``affine`` is a finite homogeneous 4×4
+    transform for that same grid. ``spatial_unit`` must be 'mm', 'meter' or
+    'micron'; missing/unknown units are rejected rather than assumed.
+
+    Absolute affine determinant gives each voxel's physical volume, accounting
+    for anisotropy, rotation, reflection and shear. Use the native expert mask
+    for native infarct volume: resampling can change the discretized mask volume.
     """
     mask = _binary_mask(mask)
     factors = {"mm": 1.0, "meter": 1000.0, "micron": 0.001}
@@ -46,9 +52,10 @@ def infarct_volume_ml(mask, affine, *, spatial_unit):
 
 
 def nifti_infarct_volume_ml(image):
-    """Use a loaded NIfTI mask's affine and declared spatial units.
+    """Measure an already loaded binary NIfTI mask using its header units.
 
-    Unknown header units are rejected rather than assumed to be millimeters.
+    ``image`` must expose NiBabel's data, affine and header interfaces. Unknown
+    units are rejected; do not assume millimeters or pass a probability volume.
     """
     return infarct_volume_ml(
         image.get_fdata(), image.affine,
@@ -57,11 +64,14 @@ def nifti_infarct_volume_ml(image):
 
 
 def zero_overlap(ground_truth, prediction):
-    """True for a lesion-positive patient with no correctly predicted voxel.
+    """Identify a complete overlap failure for a lesion-positive patient.
 
-    Includes both empty predictions and nonempty disjoint predictions.
-    Lesion-negative ground truth returns False, even with false positives.
-    Arrays must occupy the same physical grid; shape alone cannot verify this.
+    Both inputs must be binary 3D masks on the same physical grid. Matching
+    shapes are checked, but physical correspondence must be verified upstream.
+
+    Returns True for empty predictions and nonempty disjoint predictions against
+    a positive expert mask. An expert-empty case returns False even when it has
+    false positives; report those patients separately.
     """
     ground_truth = _binary_mask(ground_truth)
     prediction = _binary_mask(prediction)
@@ -72,6 +82,12 @@ def zero_overlap(ground_truth, prediction):
 
 @dataclass(frozen=True)
 class BootstrapInterval:
+    """Point estimate and percentile bounds for a patient-resampling summary.
+
+    Settings and cohort size accompany the bounds so the statistic, confidence,
+    resample count and random seed remain explicit. Record cohort membership
+    separately when reporting an interval.
+    """
     estimate: float
     lower: float
     upper: float
@@ -84,14 +100,19 @@ class BootstrapInterval:
 
 def bootstrap_patient_ci(patient_ids, values, *, statistic="mean",
                          confidence=0.95, n_resamples=10000, seed=42):
-    """Percentile bootstrap CI for a mean or median of patient-level values.
+    """Estimate a percentile confidence interval by resampling whole patients.
 
-    Supply exactly one finite scalar per unique, nonempty string patient ID.
-    Each replicate draws n patients with replacement, giving each patient
-    equal weight. Choose the cohort (e.g. lesion-positive) before calling.
-    Duplicate IDs and missing/nonfinite values are rejected, never dropped.
-    This estimates patient sampling uncertainty, not training-seed variation
-    or uncertainty from model selection. At least two patients are required.
+    Provide one finite scalar per unique, nonempty patient ID, for at least two
+    patients. Choose the cohort beforehand (for example, lesion-positive test
+    patients). Duplicate IDs and missing/nonfinite values are rejected, not
+    silently discarded.
+
+    Each replicate draws the same number of patients with replacement and gives
+    each patient equal weight. ``statistic`` is 'mean' or 'median'; ``seed`` makes
+    the resampling repeatable. The result records these settings with the bounds.
+
+    This estimates patient-sampling uncertainty only. It does not capture
+    training-seed variation, model/threshold selection or external validity.
     """
     ids = list(patient_ids)
     if any(not isinstance(pid, str) or not pid.strip() for pid in ids):

@@ -1,7 +1,8 @@
-"""Full-volume NumPy Dice behavior from notebook evaluation cells 45 and 46.
+"""Patient-level overlap metrics matching notebook evaluation cells 45 and 46.
 
-Inputs are binary predictions (or probabilities with an explicit threshold) and
-expert labels. Thresholding uses >=; expert labels use > 0. No smoothing is added.
+Dice is computed across the complete volume, without slice averaging or
+smoothing. Expert labels use > 0; probability thresholds use >=. Both-empty
+masks receive Dice 1.0. These functions check array shape, not physical geometry.
 """
 
 from collections.abc import Iterable, Mapping
@@ -15,11 +16,16 @@ def patient_metrics(
     *,
     threshold: float | None = None,
 ) -> dict[str, float | int]:
-    """Calculate patient Dice and voxel counts without averaging across slices.
+    """Return full-volume Dice, expert/predicted counts and overlap count.
 
-    Pass sigmoid probabilities with ``threshold=0.25`` for the final notebook
-    evaluation, or pass an already binary prediction without a threshold.
-    Logits must be converted to probabilities by the caller.
+    ``prediction`` and ``ground_truth`` must have matching shapes and already
+    occupy the same physical grid. Without ``threshold``, positive prediction
+    values are treated as lesion voxels; pass a binary mask in that mode.
+
+    For sigmoid probabilities, supply the validation-selected threshold
+    explicitly (0.25 in the saved notebook run). Equality at the threshold is
+    included. Convert logits to probabilities before calling; this function does
+    not apply sigmoid, estimate registration or choose a threshold.
     """
     prediction = np.asarray(prediction)
     expert = np.asarray(ground_truth) > 0
@@ -44,19 +50,29 @@ def dice_score(
     *,
     threshold: float | None = None,
 ) -> float:
-    """Return patient-level Dice; both masks empty returns exactly 1.0."""
+    """Return only Dice using the same rules as :func:`patient_metrics`.
+
+    A both-empty pair returns exactly 1.0; one empty mask against a nonempty
+    mask returns 0.0. No smoothing term is added to the denominator.
+    """
     return float(patient_metrics(prediction, ground_truth, threshold=threshold)["dice"])
 
 
 def summarize_patient_metrics(
     results: Iterable[Mapping[str, float | int]],
 ) -> dict[str, float | int]:
-    """Match evaluate_validation: average only lesion-positive patients.
+    """Summarize patient records with the notebook's validation population.
 
-    Empty positive cohorts yield NaN mean/median, as in the notebook's pandas
-    reductions. Misses count zero predictions, not every zero-Dice patient.
+    Supply records from :func:`patient_metrics` for a predefined cohort. Mean
+    and median Dice include only patients whose expert mask contains a lesion;
+    an empty positive cohort yields NaN, as in pandas reductions.
+
+    ``missed_cases`` counts empty predictions in lesion-positive patients. It
+    does not count every zero-overlap prediction: a nonempty disjoint mask can
+    also have Dice 0. Lesion-negative false positives are counted separately.
     """
     rows = list(results)
+    # Expert-empty patients belong in the false-positive summary, not mean Dice.
     positive = [row for row in rows if row["expert_voxels"] > 0]
     scores = [row["dice"] for row in positive]
     return {
