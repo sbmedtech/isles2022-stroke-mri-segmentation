@@ -29,7 +29,7 @@ import torch
 NOTEBOOK = Path(__file__).resolve().parents[1] / 'ISLES_2022_First_Colab_Notebook.ipynb'
 CELLS = json.loads(NOTEBOOK.read_text())['cells']
 HELPER_NAMES = {
-    'state_digest', 'context_digest', 'validate_selection', 'test_artifact_provenance',
+    'state_digest', 'canonical_json_value', 'context_digest', 'validate_selection', 'test_artifact_provenance',
     'test_artifact_directory', 'write_artifact_manifest', 'read_test_artifact',
     'save_test_artifact', 'check_figure_metrics',
 }
