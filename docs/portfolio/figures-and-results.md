@@ -111,7 +111,7 @@ success/failure gallery. For higher-resolution or additional cases, provide
 `ISLES2022_Project/results/all_test_patient_visualizations.pdf` and, if saved,
 the Step 18 success/failure PNG, together with
 `ISLES2022_Project/results/test_epoch43.csv`. For figures from the repaired
-workflow, provide `results/test/<run-and-provenance-directory>/example_test_patients.png`
+workflow, provide `results/runs/<run-id>/epoch<epoch>-<provenance-digest>/example_test_patients.png`
 and its `.png.manifest.json`, corresponding `test.csv` and
 `test.csv.manifest.json`. Do not rename old figures as repaired-run results.
 Exact full-cohort metric checking needs original and reproduction 38-row CSVs
